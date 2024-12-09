@@ -1,0 +1,116 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #d0e3ff;
+}
+
+.navbar-nav .nav-link {
+    display: flex;
+    align-items: center; 
+    color: white !important; 
+    transition: color 0.3s, font-weight 0.3s; 
+    font-weight: 450;
+}
+
+.material-symbols-outlined {
+    font-size: 24px; 
+    margin-right: 5px; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+}
+.navbar-nav .nav-link:hover {
+    font-weight: 450;
+    color: rgb(29, 74, 133) !important;
+}
+
+.jumbotron {
+    background-color: #ffffff;
+    padding: 3.5rem 2.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    margin-top: 30px;
+}
+
+.jumbotron .display-4 {
+    font-weight: bold;
+}
+
+.jumbotron .lead {
+    font-size: 1.25rem;
+}
+
+footer {
+    position: relative;
+    width: 100%;
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
+    background-color: white;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-img-top {
+    height: 250px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+}
+
+.card-text {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 200px;
+    }
+}
+
+/* Estilos customizados para a navbar */
+.navbar {
+    position: relative;
+}
+
+.navbar-brand {
+    margin-right: 1rem;
+}
+
+.navbar-nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-item {
+    margin-left: 1rem;
+}
+
+
+/* Ajuste para ícones nos dropdowns */
+.dropdown-item .material-symbols-outlined {
+    margin-right: 10px;
+    color:black;
+}

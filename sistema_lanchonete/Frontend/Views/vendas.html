@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Lanchonete</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./../../Raiz/CSS/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-info">
+        <span class="material-symbols-outlined text-white">fastfood</span>
+        <p class="h2 font-weight-bold ml-2 mb-0 text-white">Lanchonete</p>
+        <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="./../../Frontend/Views/index.html">
+                        <span class="material-symbols-outlined">home</span> Início
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./../../Frontend/Views/produtos.html">
+                        <span class="material-symbols-outlined">lunch_dining</span> Produtos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./../../Frontend/Views/estoque.html">
+                        <span class="material-symbols-outlined">inventory_2</span> Estoque
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./../../Frontend/Views/vendas.html">
+                        <span class="material-symbols-outlined">point_of_sale</span> Vendas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./../../Frontend/Views/compras.html">
+                        <span class="material-symbols-outlined">shopping_cart</span> Compras
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./../../Frontend/Views/relatorios.html">
+                        <span class="material-symbols-outlined">lab_profile</span> Relatórios
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="material-symbols-outlined">account_circle</span> 
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="./../../Backend/Controllers/perfil_usuario.php">
+                            <span class="material-symbols-outlined">badge</span> Perfil
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="./../../Backend/Controllers/logout.php">
+                            <span class="material-symbols-outlined">logout</span> Sair
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div class="jumbotron text-center">
+            <h2 class="display-4">Registrar Venda</h2>
+            <form class="form" id="saleForm" action="./../../Backend/Controllers/registrar_venda.php" method="POST">
+                <div class="form-group">
+                    <input type="number" id="user_id" name="user_id" class="form-control" required placeholder="Identificação do Usuário">
+                </div>
+                <div class="form-group">
+                    <input type="date" id="sale_date" name="sale_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <select id="product_list" name="product_list" class="form-control" required>
+                        <option value="" disabled selected>Selecione um produto</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="number" id="quantity" name="quantity" min="1" class="form-control" placeholder="Quantidade">
+                    <button type="button" class="btn btn-primary mt-2" onclick="addProduct()">Adicionar Produto</button>
+                </div>
+                <div class="form-group">
+                    <h3 style="color: #292929;">Produtos Selecionados</h3>
+                    <ul id="selected_products" class="list-group"></ul>
+                    <input type="hidden" id="products" name="products">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="total_value" name="total_value" class="form-control" readonly placeholder="Total">
+                </div>
+                <button type="submit" class="btn btn-success">Registrar Venda</button>
+            </form>
+        </div>
+    </div>
+    <footer class="text-center text-white bg-info mt-auto py-3">
+        <div class="container">
+            © 2024 Lanchonete Copyright
+        </div>
+    </footer>
+    <script>
+        let selectedProducts = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('./../../Backend/Controllers/obter_produtos.php')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Produtos carregados:', data);
+            const productList = document.getElementById('product_list');
+            data.forEach(product => {
+                const option = document.createElement('option');
+                option.value = JSON.stringify({ id_produto: product.id_produto, nome: product.nome, valor: product.valor });
+                option.textContent = `${product.nome} - R$${product.valor}`;
+                productList.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Erro ao carregar produtos:', error));
+});
+
+function addProduct() {
+    console.log('Função addProduct chamada');
+    const productList = document.getElementById('product_list');
+    const quantity = document.getElementById('quantity').value;
+    const selectedOption = productList.options[productList.selectedIndex];
+    const product = JSON.parse(selectedOption.value);
+
+    console.log('Produto selecionado:', product);
+    console.log('Quantidade:', quantity);
+
+    if (product.id_produto && quantity > 0) {
+        selectedProducts.push({ 
+            ID_Produto: product.id_produto, 
+            Nome: product.nome, 
+            Valor: parseFloat(product.valor),  
+            Quantidade: parseInt(quantity) 
+        });
+        console.log('Produto adicionado:', selectedProducts);
+        updateSelectedProducts();
+        document.getElementById('quantity').value = '';
+    } else {
+        console.log('Produto ou quantidade inválidos');
+    }
+}
+
+function updateSelectedProducts() {
+    const selectedProductsList = document.getElementById('selected_products');
+    selectedProductsList.innerHTML = '';
+    selectedProducts.forEach(product => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${product.Nome} - Quantidade: ${product.Quantidade}`;
+        selectedProductsList.appendChild(listItem);
+    });
+    document.getElementById('products').value = JSON.stringify(selectedProducts);
+    updateTotalValue();
+}
+
+function updateTotalValue() {
+    const totalValue = selectedProducts.reduce((total, product) => total + (product.Valor * product.Quantidade), 0);
+    document.getElementById('total_value').value = totalValue.toFixed(2);
+}
+
+document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    console.log('Dados do formulário:', Object.fromEntries(formData.entries()));
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        if (data.includes('Venda registrada com sucesso!')) {
+            showSuccessMessage();
+            clearForm();
+        }
+    })
+    .catch(error => console.error('Erro ao registrar venda:', error));
+});
+
+function showSuccessMessage() {
+    const successAlert = document.createElement('div');
+    successAlert.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
+    successAlert.innerHTML = `
+        Venda registrada com sucesso!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    `;
+    document.querySelector('.jumbotron').insertAdjacentElement('afterbegin', successAlert);
+    setTimeout(() => {
+        successAlert.classList.remove('show');
+        setTimeout(() => {
+            successAlert.remove();
+        }, 300);
+    }, 3500); 
+}
+
+        function clearForm() {
+            document.getElementById('user_id').value = '';
+            document.getElementById('sale_date').value = '';
+            document.getElementById('product_list').selectedIndex = 0;
+            document.getElementById('quantity').value = '';
+            document.getElementById('selected_products').innerHTML = '';
+            selectedProducts.length = 0;
+            document.getElementById('total_value').value = '';
+            document.getElementById('products').value = '';
+        }
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

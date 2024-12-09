@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir Senha - Lanchonete</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./../../Raiz/CSS/style2.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="screen">
+            <h1 class="card-header text-center bg-info text-white">Redefinir Senha</h1>
+            <div class="screen__content">
+                <form class="redefinir-senha" id="redefinirSenhaForm" method="post" action="./../../Backend/Controllers/processar_redefinicao.php">
+                    <div class="form-group">
+                        <label for="email" class="sr-only">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Seu Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nova-senha" class="sr-only">Nova Senha:</label>
+                        <input type="password" class="form-control" id="nova-senha" name="nova-senha" placeholder="Nova Senha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmar-senha" class="sr-only">Confirmar Senha:</label>
+                        <input type="password" class="form-control" id="confirmar-senha" name="confirmar-senha" placeholder="Confirmar Senha" required>
+                    </div>
+                    <button class="btn btn-info btn-block" type="submit">Redefinir Senha</button>
+                    <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
+                    <div id="success-message" class="alert alert-success mt-3" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen__background">
+        <span class="screen__background__shape screen__background__shape1"></span>
+        <span class="screen__background__shape screen__background__shape2"></span>
+        <span class="screen__background__shape screen__background__shape3"></span>
+        <span class="screen__background__shape screen__background__shape4"></span>
+        <span class="screen__background__shape screen__background__shape5"></span>
+        <span class="screen__background__shape screen__background__shape6"></span>
+        <span class="screen__background__shape screen__background__shape7"></span>
+        <span class="screen__background__shape screen__background__shape8"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('redefinirSenhaForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+    
+                const email = document.getElementById('email').value;
+                const novaSenha = document.getElementById('nova-senha').value;
+                const confirmarSenha = document.getElementById('confirmar-senha').value;
+    
+                if (novaSenha !== confirmarSenha) {
+                    showError('As senhas não coincidem.');
+                    return;
+                }
+    
+                fetch('./../../Backend/Controllers/nova_senha.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `email=${encodeURIComponent(email)}&nova-senha=${encodeURIComponent(novaSenha)}`
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        showSuccess(data.message);
+                        setTimeout(() => {
+                            window.location.href = './../../Backend/Controllers/login.php';
+                        }, 3000);
+                    } else {
+                        showError(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError('Erro ao processar a solicitação.');
+                });
+    
+                function showError(message) {
+                    const errorMessage = document.getElementById('error-message');
+                    errorMessage.textContent = message;
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.style.display = 'none';
+                    }, 3000);
+                }
+
+                function showSuccess(message) {
+                    const successMessage = document.getElementById('success-message');
+                    successMessage.textContent = message;
+                    successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
